@@ -5,7 +5,7 @@ import pandas as pd
 from scipy.stats import *
 
 
-def extract_features(time_series):
+def extract_features(time_series, debug_info=False):
     features = []
     i = 0
     for t in time_series.itertuples():
@@ -37,12 +37,6 @@ def extract_features(time_series):
             slope = poly.coef[1]
             intercept = poly.coef[0]
 
-        rolling_mean = pd.Series(values).rolling(window=5).mean()
-        rolling_std = pd.Series(values).rolling(window=5).std()
-
-        first_diff = np.diff(values, n=1)
-        second_diff = np.diff(values, n=2)
-
         if len(values) == 0:
             total_amplitude = 0
             dominant_frequency = 0
@@ -60,11 +54,12 @@ def extract_features(time_series):
                          slope, intercept, total_amplitude, dominant_frequency])
         i += 1
 
-        if i % 5000 == 0:
+        if i % 5000 == 0 and debug_info:
             print(i, end=' ')
-    print()
 
     return pd.DataFrame(features)
+
+    # Решения сверху и снизу работают примерно одинаково:
 
     # time_series['mean'] = time_series['values'].apply(lambda x: np.mean(x))
     # time_series['std'] = time_series['values'].apply(lambda x: np.std(x))
